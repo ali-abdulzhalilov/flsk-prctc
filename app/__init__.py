@@ -23,4 +23,8 @@ def create_app(test_config=None):
 	def index():
 		return render_template('index.html')
 		
+	from . import blog
+	app.register_blueprint(blog.bp)
+	app.add_url_rule('/blog', endpoint='blog')
+		
 	return app

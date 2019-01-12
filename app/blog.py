@@ -1,5 +1,5 @@
 from flask import (
-	Blueprint, render_template
+	Blueprint, flash, redirect, render_template, request, url_for
 )
 
 from app.db import get_db
@@ -14,4 +14,28 @@ def index():
 		'	FROM post'
 		'	ORDER BY created DESC'
 	).fetchall()
-	return render_template('blog/index.html')
+	return render_template('blog/index.html', posts=posts)
+	
+@bp.route('/create', methods=('GET', 'POST'))
+def create():
+	if request.method == 'POST':
+		title = request.form['title']
+		body = request.form['body']
+		error =  None
+		
+		if not title:
+			error = 'Title is required.'
+		
+		if error is not None:
+			flash(error)
+		else:
+			db = get_db()
+			db.execute(
+				'INSERT INTO post (title, body)'
+				'	VALUES (?, ?)',
+				(title, body)
+			)
+			db.commit()
+			return redirect(url_for('blog.index'))
+		
+	return render_template('blog/create.html')

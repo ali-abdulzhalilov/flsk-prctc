@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block header %}
+	<h1>{% block title %}Post{% endblock %}</h1>
+	<a class="action" href="{{ url_for('blog.index') }}">Back</a>
+{% endblock %}
+
+{% block content %}
+	<h1>{{ post['title'] }}</h1>
+	<p>{{ post['body'] }}</p>
+	<hr>
+{% endblock %}

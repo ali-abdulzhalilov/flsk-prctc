@@ -90,4 +90,16 @@ def delete(id):
 @bp.route('/blog/<int:id>', methods=('GET', 'POST'))
 def view(id):
 	post = get_post(id)
-	return render_template('blog/view.html', post=post)
+	comments = get_comments(id)
+	return render_template('blog/view.html', post=post, comments=comments)
+	
+def get_comments(post_id):
+	db = get_db()
+	comments = db.execute(
+		'SELECT c.id, c.created, c.body'
+		'	FROM comment c JOIN post p ON c.post_id = p.id'
+		'	WHERE p.id = ?'
+		'	ORDER BY c.created DESC',
+		(post_id,)
+	).fetchall()
+	return comments

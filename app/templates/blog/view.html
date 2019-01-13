@@ -9,4 +9,7 @@
 	<h1>{{ post['title'] }}</h1>
 	<p>{{ post['body'] }}</p>
 	<hr>
+	{% for comment in comments %}
+		<p><span>on {{ comment['created'].strftime('%Y-%m-%d') }}</span> {{ comment['body'] }}</p>
+	{% endfor %}
 {% endblock %}

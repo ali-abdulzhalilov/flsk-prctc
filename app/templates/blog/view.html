@@ -6,10 +6,11 @@
 {% endblock %}
 
 {% block content %}
+	<span>{{ post['created'].strftime('%Y-%m-%d %H:%M:%S') }}</span>
 	<p>{{ post['body'] }}</p>
 	<hr>
 	{% for comment in comments %}
-		<p><span>on {{ comment['created'].strftime('%Y-%m-%d') }}</span> {{ comment['body'] }}</p>
+		<div class="comment"><span>{{ comment['created'].strftime('%Y-%m-%d %H:%M:%S') }}</span> {{ comment['body'] }}</div>
 	{% endfor %}
 	
 	<form method="post">

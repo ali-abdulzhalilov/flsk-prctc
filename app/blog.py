@@ -11,9 +11,10 @@ bp = Blueprint('blog', __name__)
 def index():
 	db = get_db()
 	posts = db.execute(
-		'SELECT id, title, body, created'
-		'	FROM post'
-		'	ORDER BY created DESC'
+		'SELECT p.id, p.title, p.body, p.created, COUNT(c.id) as count'
+		'	FROM post p LEFT JOIN comment c ON p.id = c.post_id'
+		'	GROUP BY p.id'
+		'	ORDER BY p.created DESC'
 	).fetchall()
 	return render_template('blog/index.html', posts=posts)
 	
@@ -89,8 +90,20 @@ def delete(id):
 	
 @bp.route('/blog/<int:id>', methods=('GET', 'POST'))
 def view(id):
+	if request.method == 'POST':
+		body = request.form['body']
+		
+		db = get_db()
+		db.execute(
+			'INSERT INTO comment (post_id, body)'
+			'	VALUES (?, ?)',
+			(id, body)
+		)
+		db.commit()
+	
 	post = get_post(id)
 	comments = get_comments(id)
+	
 	return render_template('blog/view.html', post=post, comments=comments)
 	
 def get_comments(post_id):
@@ -99,7 +112,7 @@ def get_comments(post_id):
 		'SELECT c.id, c.created, c.body'
 		'	FROM comment c JOIN post p ON c.post_id = p.id'
 		'	WHERE p.id = ?'
-		'	ORDER BY c.created DESC',
+		'	ORDER BY c.created ASC',
 		(post_id,)
 	).fetchall()
 	return comments
